@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
-const app_1 = __importDefault(require("./src/app"));
+const app_1 = __importDefault(require("./src/app")); // Adjust the path as necessary to correctly import `app`
 // Configuring dotenv
 dotenv_1.default.config();
 // Getting the PORT from environment variables
