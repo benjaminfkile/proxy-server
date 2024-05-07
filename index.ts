@@ -1,13 +1,44 @@
-import dotenv from "dotenv";
-import app from "./src/app"; // Adjust the path as necessary to correctly import `app`
+// proxy-server.ts
 
-// Configuring dotenv
+import express from 'express';
+import http from 'http';
+import https from 'https';
+import * as url from 'url';
+import dotenv from "dotenv";
 dotenv.config();
 
-// Getting the PORT from environment variables
-const PORT = process.env.PORT || 8000; // Default to 8000 if PORT is not provided in the environment
 
-// Starting the server
+const app = express();
+
+// Proxy route
+app.all('*', (req, res) => {
+    const parsedUrl = url.parse(req.url);
+    const options = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+        path: parsedUrl.path,
+        method: req.method,
+        headers: req.headers,
+    };
+
+    const proxyReq = (parsedUrl.protocol === 'https:' ? https : http).request(options, (proxyRes) => {
+        res.writeHead(proxyRes.statusCode!, proxyRes.headers);
+        proxyRes.pipe(res, {
+            end: true
+        });
+    });
+
+    req.pipe(proxyReq, {
+        end: true
+    });
+
+    proxyReq.on('error', (err) => {
+        console.error('Proxy request error:', err);
+        res.status(500).send('Proxy request error');
+    });
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+    console.log(`Proxy server is running on port ${PORT}`);
 });
