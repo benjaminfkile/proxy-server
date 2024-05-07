@@ -1,16 +1,17 @@
-// proxy-server.ts
+// proxy-server.js
 
-import express from 'express';
-import http from 'http';
-import https from 'https';
-import * as url from 'url';
-import dotenv from "dotenv";
-dotenv.config();
+const express = require('express');
+const http = require('http');
+const https = require('https');
+const url = require('url');
+const dotenv = require("dotenv")
 
+dotenv.config()
 
 const app = express();
 
 // Proxy route
+//@ts-ignore
 app.all('*', (req, res) => {
     const parsedUrl = url.parse(req.url);
     const options = {
@@ -20,9 +21,9 @@ app.all('*', (req, res) => {
         method: req.method,
         headers: req.headers,
     };
-
+    //@ts-ignore
     const proxyReq = (parsedUrl.protocol === 'https:' ? https : http).request(options, (proxyRes) => {
-        res.writeHead(proxyRes.statusCode!, proxyRes.headers);
+        res.writeHead(proxyRes.statusCode, proxyRes.headers);
         proxyRes.pipe(res, {
             end: true
         });
@@ -31,7 +32,7 @@ app.all('*', (req, res) => {
     req.pipe(proxyReq, {
         end: true
     });
-
+    //@ts-ignore
     proxyReq.on('error', (err) => {
         console.error('Proxy request error:', err);
         res.status(500).send('Proxy request error');
