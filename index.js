@@ -10,8 +10,6 @@ dotenv.config()
 
 const app = express();
 
-// Proxy route
-//@ts-ignore
 app.all('*', (req, res) => {
     const parsedUrl = url.parse(req.url);
     const options = {
@@ -21,7 +19,6 @@ app.all('*', (req, res) => {
         method: req.method,
         headers: req.headers,
     };
-    //@ts-ignore
     const proxyReq = (parsedUrl.protocol === 'https:' ? https : http).request(options, (proxyRes) => {
         res.writeHead(proxyRes.statusCode, proxyRes.headers);
         proxyRes.pipe(res, {
@@ -32,7 +29,6 @@ app.all('*', (req, res) => {
     req.pipe(proxyReq, {
         end: true
     });
-    //@ts-ignore
     proxyReq.on('error', (err) => {
         console.error('Proxy request error:', err);
         res.status(500).send('Proxy request error');
