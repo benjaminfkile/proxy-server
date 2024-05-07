@@ -25,4 +25,8 @@ const proxyMiddleware = (0, http_proxy_middleware_1.createProxyMiddleware)({
 });
 // Apply proxy middleware
 app.use('/', proxyMiddleware); // Catch all routes and proxy them
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 exports.default = app;
